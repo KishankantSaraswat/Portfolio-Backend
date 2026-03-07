@@ -133,7 +133,7 @@ async function syncToPinecone() {
         for (const [index, item] of resumeItems.entries()) {
             if (index > 0 && index % 10 === 0) await sleep(500);
 
-            const itemText = `Resume Item Type: ${item.type}. Title/Role: ${item.title}. Organization/Company: ${item.organization}. Duration: ${item.startDate} to ${item.endDate} (Present: ${item.isPresent}). Location: ${item.location || 'N/A'}. Description: ${item.description}. Achievements: ${item.achievements?.join(', ') || 'None listed'}.`;
+            const itemText = `Resume Item Type: ${item.type}. Title/Role/Achievement: ${item.title}. Duration: ${item.duration}. Description: ${item.description}.`;
 
             const embedding = await getEmbedding(itemText);
 
@@ -145,7 +145,7 @@ async function syncToPinecone() {
                     resumeType: item.type,
                     text: itemText,
                     title: item.title,
-                    organization: item.organization
+                    duration: item.duration
                 }
             });
         }
