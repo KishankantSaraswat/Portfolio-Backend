@@ -23,6 +23,7 @@ app.use('/api/certificates', require('./routes/certificates'));
 app.use('/api/contact', require('./routes/contact'));
 app.use('/api/sidebar', require('./routes/sidebar'));
 app.use('/api/categories', require('./routes/categories'));
+app.use('/api/chat', require('./routes/chat'));
 
 // Root Endpoint
 app.get('/', (req, res) => {
