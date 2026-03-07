@@ -30,15 +30,36 @@ app.get('/', (req, res) => {
 
 // Database Connection
 const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/portfolio';
+const MONGO_URI = process.env.MONGO_URI;
 
-mongoose.connect(MONGO_URI)
-    .then(() => {
-        console.log('Connected to MongoDB');
-        app.listen(PORT, () => {
-            console.log(`Server running on port ${PORT}`);
+if (!MONGO_URI) {
+    console.error('CRITICAL: MONGO_URI is not defined in environment variables');
+}
+
+console.log('Starting server initialization...');
+
+// Start the Express server first to satisfy Render's port check
+const server = app.listen(PORT, () => {
+    console.log(`==> Server is listening on port ${PORT}`);
+    console.log(`==> Environment: ${process.env.NODE_ENV || 'development'}`);
+});
+
+// Connect to MongoDB
+if (MONGO_URI) {
+    console.log('Attempting to connect to MongoDB...');
+    mongoose.connect(MONGO_URI)
+        .then(() => {
+            console.log('SUCCESS: Connected to MongoDB');
+        })
+        .catch((err) => {
+            console.error('ERROR: Failed to connect to MongoDB', err.message);
+            // We don't exit the process here so that the server can still respond (or at least stay alive for logs)
         });
-    })
-    .catch((err) => {
-        console.error('Failed to connect to MongoDB', err);
-    });
+} else {
+    console.warn('WARNING: Running without MongoDB connection because MONGO_URI is missing');
+}
+
+// Error handling for the server
+server.on('error', (err) => {
+    console.error('SERVER ERROR:', err);
+});
