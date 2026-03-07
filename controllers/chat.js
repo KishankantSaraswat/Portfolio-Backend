@@ -90,7 +90,7 @@ Please answer the user's question clearly, concisely, and enthusiastically based
         // 6. Call Groq API
         const chatCompletion = await groq.chat.completions.create({
             messages: groqMessages,
-            model: 'llama3-8b-8192', // Fast and capable model
+            model: 'llama-3.1-8b-instant', // Updated from decommissioned llama3-8b-8192
             temperature: 0.5,
             max_tokens: 1024,
             top_p: 1,
