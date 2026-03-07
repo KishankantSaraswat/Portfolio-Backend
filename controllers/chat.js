@@ -60,7 +60,21 @@ exports.chatResponse = async (req, res) => {
         });
 
         // 3. Extract the text from the top results to build the context
-        const contexts = queryResponse.matches.map(match => match.metadata.text);
+        const contexts = [];
+        const matchedImages = [];
+
+        queryResponse.matches.forEach(match => {
+            if (match.metadata.text) {
+                contexts.push(match.metadata.text);
+            }
+            if (match.metadata.imageUrl) {
+                // Ensure we don't send duplicate images if multiple chunks match the same project
+                if (!matchedImages.includes(match.metadata.imageUrl)) {
+                    matchedImages.push(match.metadata.imageUrl);
+                }
+            }
+        });
+
         const combinedContext = contexts.join('\n\n');
 
         // 4. Construct the system prompt
@@ -101,7 +115,7 @@ Please answer the user's question clearly, concisely, and enthusiastically based
 
         res.status(200).json({
             reply,
-            // optionally return what context was matched so the frontend could show "Based on project X" (debugging)
+            matchedImages,
             matchedContextCount: queryResponse.matches.length
         });
 

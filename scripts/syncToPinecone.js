@@ -97,7 +97,8 @@ async function syncToPinecone() {
                     type: 'project',
                     text: projectText,
                     title: project.title,
-                    category: project.category
+                    category: project.category,
+                    imageUrl: project.image || ''
                 }
             });
         }
