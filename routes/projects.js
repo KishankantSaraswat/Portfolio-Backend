@@ -20,15 +20,20 @@ router.get('/', async (req, res) => {
 // @desc    Create a project
 // @access  Private (Admin only)
 router.post('/', auth, async (req, res) => {
-    const { title, category, image, link } = req.body;
+    const {
+        title, category, image, shortDescription, fullSummary,
+        problemStatement, solution, systemArchitecture, architectureImage, techStack,
+        keyFeatures, challengesLearning, resultsImpact, demoLinks,
+        isFeatured, tags
+    } = req.body;
 
     try {
         const count = await Project.countDocuments();
         const newProject = new Project({
-            title,
-            category,
-            image,
-            link,
+            title, category, image, shortDescription, fullSummary,
+            problemStatement, solution, systemArchitecture, architectureImage, techStack,
+            keyFeatures, challengesLearning, resultsImpact, demoLinks,
+            isFeatured, tags,
             order: count
         });
 
@@ -62,7 +67,12 @@ router.put('/reorder', auth, async (req, res) => {
 // @desc    Update a project
 // @access  Private (Admin only)
 router.put('/:id', auth, async (req, res) => {
-    const { title, category, image, link } = req.body;
+    const {
+        title, category, image, shortDescription, fullSummary,
+        problemStatement, solution, systemArchitecture, architectureImage, techStack,
+        keyFeatures, challengesLearning, resultsImpact, demoLinks,
+        isFeatured, tags
+    } = req.body;
 
     try {
         let project = await Project.findById(req.params.id);
@@ -70,7 +80,14 @@ router.put('/:id', auth, async (req, res) => {
 
         project = await Project.findByIdAndUpdate(
             req.params.id,
-            { $set: { title, category, image, link } },
+            {
+                $set: {
+                    title, category, image, shortDescription, fullSummary,
+                    problemStatement, solution, systemArchitecture, architectureImage, techStack,
+                    keyFeatures, challengesLearning, resultsImpact, demoLinks,
+                    isFeatured, tags
+                }
+            },
             { new: true }
         );
 
