@@ -62,7 +62,8 @@ async function syncToPinecone() {
         // 1. Process Profile
         if (profile) {
             console.log('Processing Profile...');
-            const profileText = `My name is ${profile.name}. I am a ${profile.role}. My tagline is: ${profile.tagline}. About me: ${profile.about}. My locations are ${profile.location}. Contact me at ${profile.contactEmail} or ${profile.contactPhone}. Github: ${profile.github}. LinkedIn: ${profile.linkedin}. Portfolio Summary: ${profile.portfolioSummary}`;
+            // Since the Profile model only has a 'text' field, we use that directly.
+            const profileText = profile.text;
 
             const embedding = await getEmbedding(profileText);
 
@@ -71,9 +72,7 @@ async function syncToPinecone() {
                 values: embedding,
                 metadata: {
                     type: 'profile',
-                    text: profileText,
-                    name: profile.name,
-                    role: profile.role
+                    text: profileText
                 }
             });
         }
