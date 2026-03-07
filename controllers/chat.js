@@ -61,18 +61,13 @@ exports.chatResponse = async (req, res) => {
 
         // 3. Extract the text from the top results to build the context
         const contexts = [];
-        const matchedImages = [];
 
         queryResponse.matches.forEach(match => {
-            if (match.metadata.text) {
-                contexts.push(match.metadata.text);
-            }
+            let itemContext = match.metadata.text;
             if (match.metadata.imageUrl) {
-                // Ensure we don't send duplicate images if multiple chunks match the same project
-                if (!matchedImages.includes(match.metadata.imageUrl)) {
-                    matchedImages.push(match.metadata.imageUrl);
-                }
+                itemContext += `\nInclude this exact Image URL in standard markdown format (e.g., ![Project Image](${match.metadata.imageUrl})) right before the description of the project.`;
             }
+            contexts.push(itemContext);
         });
 
         const combinedContext = contexts.join('\n\n');
@@ -82,7 +77,9 @@ exports.chatResponse = async (req, res) => {
 
 Below is the retrieved information about Krishankant relevant to the user's current question. YOU MUST USE THIS INFORMATION to answer the question accurately. If the requested information is not in the context below, politely inform the user that you don't have that specific detail but they can contact Krishankant directly. 
 
-DO NOT make up any facts, projects, or skills not mentioned in the context.
+CRITICAL INSTRUCTION FOR IMAGES: If the context below provides an "Image URL" for a specific project or item, you MUST include it directly in your response using markdown syntax: ![Image Name](image_url). Place the image immediately before the description of the item it belongs to. Do not group all images at the end.
+
+DO NOT make up any facts, projects, strings, or skills not mentioned in the context.
 
 --- CONTEXT (Information about Krishankant from his database) ---
 ${combinedContext || "No relevant details found. Please offer to connect the user with Krishankant."}
@@ -115,7 +112,6 @@ Please answer the user's question clearly, concisely, and enthusiastically based
 
         res.status(200).json({
             reply,
-            matchedImages,
             matchedContextCount: queryResponse.matches.length
         });
 
