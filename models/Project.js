@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const pineconeService = require('../services/pineconeService');
 
 const projectSchema = new mongoose.Schema({
     title: {
@@ -69,5 +70,19 @@ const projectSchema = new mongoose.Schema({
         default: 0
     }
 }, { timestamps: true });
+
+// Sync to Pinecone after save
+projectSchema.post('save', async function (doc) {
+    console.log('Project saved, syncing to Pinecone...');
+    await pineconeService.upsertDocument('project', doc);
+});
+
+// Sync to Pinecone after delete
+projectSchema.post('findOneAndDelete', async function (doc) {
+    if (doc) {
+        console.log('Project deleted, removing from Pinecone...');
+        await pineconeService.deleteDocument('project', doc._id);
+    }
+});
 
 module.exports = mongoose.model('Project', projectSchema);

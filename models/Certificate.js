@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const pineconeService = require('../services/pineconeService');
 
 const certificateSchema = new mongoose.Schema({
     title: {
@@ -26,5 +27,19 @@ const certificateSchema = new mongoose.Schema({
         required: true
     }
 }, { timestamps: true });
+
+// Sync to Pinecone after save
+certificateSchema.post('save', async function (doc) {
+    console.log('Certificate saved, syncing to Pinecone...');
+    await pineconeService.upsertDocument('certificate', doc);
+});
+
+// Sync to Pinecone after delete
+certificateSchema.post('findOneAndDelete', async function (doc) {
+    if (doc) {
+        console.log('Certificate deleted, removing from Pinecone...');
+        await pineconeService.deleteDocument('certificate', doc._id);
+    }
+});
 
 module.exports = mongoose.model('Certificate', certificateSchema);
