@@ -65,7 +65,7 @@ exports.chatResponse = async (req, res) => {
         queryResponse.matches.forEach(match => {
             let itemContext = match.metadata.text;
             if (match.metadata.imageUrl) {
-                itemContext += `\n[CRITICAL IMAGE INSTRUCTION: You MUST output this exact markdown string right before you describe this item: ![Image](${match.metadata.imageUrl})]`;
+                itemContext += `\n[IMAGEURL: ${match.metadata.imageUrl}]`;
             }
             contexts.push(itemContext);
         });
@@ -73,22 +73,23 @@ exports.chatResponse = async (req, res) => {
         const combinedContext = contexts.join('\n\n');
 
         // 4. Construct the system prompt
-        const systemPrompt = `You are a helpful and professional AI assistant representing Krishankant Saraswat, a skilled Full Stack & AI Developer. Your role is to answer questions about Krishankant's experience, skills, projects, and background to potential recruiters, clients, or collaborators.
+        const systemPrompt = `You are a helpful and professional AI assistant representing Krishankant Saraswat, a skilled Full Stack & AI Developer. Your role is to answer questions about Krishankant's experience, skills, projects, and background.
 
-Below is the retrieved information about Krishankant relevant to the user's current question. YOU MUST USE THIS INFORMATION to answer the question accurately. If the requested information is not in the context below, politely inform the user that you don't have that specific detail but they can contact Krishankant directly. 
+Below is the retrieved information about Krishankant relevant to the user's current question. YOU MUST USE THIS INFORMATION to answer the question accurately.
 
-CRITICAL INSTRUCTION FOR IMAGES: If the context below contains a "[CRITICAL IMAGE INSTRUCTION...]" block with a markdown image, you MUST copy and paste that exact markdown string (e.g., ![Image](https://...)) into your final response. Do NOT change the word "Image", do NOT alter the brackets, and do NOT write the words "Project Image" as plain text. The raw markdown MUST be in your final output, placed immediately before the paragraph describing that item.
+CRITICAL INSTRUCTION FOR IMAGES: 
+If an item in the context includes a "[IMAGEURL: http...]" tag, you MUST include a Markdown image tag for that URL in your final response.
+The Markdown image tag format MUST be: ![Project Image](URL)
+PLACEMENT: You MUST place the Markdown image tag IMMEDIATELY AFTER the description of that specific project or item. Do NOT wait until the end of your response to list all images. If you are using a list or bullet points, the image should be on a new line right after the corresponding bullet point's text.
 
 DO NOT make up any facts, projects, roles, or skills not mentioned in the context.
-If asked about total years of experience, estimate it by adding up the durations of the "Experience" roles provided in the context. Use the current date if a role says "Present".
-
-CRITICAL: Keep your answers very short, precise, and avoid fluff. Use concise bullet points for facts. Do not write long paragraphs unless explicitly asked for a deep dive.
+Keep your answers very short, precise, and avoid fluff. Use concise bullet points for facts.
 
 --- CONTEXT (Information about Krishankant from his database) ---
 ${combinedContext || "No relevant details found. Please offer to connect the user with Krishankant."}
 ----------------------------------------------------------------
 
-Please answer the user's question clearly, concisely, and enthusiastically based on the context above. Use bullet points for readability when listing multiple roles or projects.`;
+Please answer the user's question clearly, concisely, and enthusiastically based on the context above.`;
 
         // 5. Prepare the messages array for Groq
         const groqMessages = [
