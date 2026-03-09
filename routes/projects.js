@@ -22,7 +22,7 @@ router.get('/', async (req, res) => {
 router.post('/', auth, async (req, res) => {
     const {
         title, category, image, shortDescription, fullSummary,
-        problemStatement, solution, systemArchitecture, architectureImage, techStack,
+        problemStatement, solution, systemArchitecture, architectureImage, architectureType, architectureCode, techStack,
         keyFeatures, challengesLearning, resultsImpact, demoLinks,
         isFeatured, tags
     } = req.body;
@@ -31,7 +31,7 @@ router.post('/', auth, async (req, res) => {
         const count = await Project.countDocuments();
         const newProject = new Project({
             title, category, image, shortDescription, fullSummary,
-            problemStatement, solution, systemArchitecture, architectureImage, techStack,
+            problemStatement, solution, systemArchitecture, architectureImage, architectureType, architectureCode, techStack,
             keyFeatures, challengesLearning, resultsImpact, demoLinks,
             isFeatured, tags,
             order: count
@@ -69,7 +69,7 @@ router.put('/reorder', auth, async (req, res) => {
 router.put('/:id', auth, async (req, res) => {
     const {
         title, category, image, shortDescription, fullSummary,
-        problemStatement, solution, systemArchitecture, architectureImage, techStack,
+        problemStatement, solution, systemArchitecture, architectureImage, architectureType, architectureCode, techStack,
         keyFeatures, challengesLearning, resultsImpact, demoLinks,
         isFeatured, tags
     } = req.body;
@@ -83,7 +83,7 @@ router.put('/:id', auth, async (req, res) => {
             {
                 $set: {
                     title, category, image, shortDescription, fullSummary,
-                    problemStatement, solution, systemArchitecture, architectureImage, techStack,
+                    problemStatement, solution, systemArchitecture, architectureImage, architectureType, architectureCode, techStack,
                     keyFeatures, challengesLearning, resultsImpact, demoLinks,
                     isFeatured, tags
                 }

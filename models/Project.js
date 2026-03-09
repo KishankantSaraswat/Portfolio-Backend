@@ -38,6 +38,15 @@ const projectSchema = new mongoose.Schema({
         type: String,
         required: false, // Base64 image
     },
+    architectureType: {
+        type: String,
+        enum: ['image', 'mermaid'],
+        default: 'image'
+    },
+    architectureCode: {
+        type: String,
+        required: false, // Mermaid code
+    },
     techStack: {
         frontend: [String],
         backend: [String],
